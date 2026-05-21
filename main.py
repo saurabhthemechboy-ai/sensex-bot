@@ -1,5 +1,6 @@
 from flask import Flask
 from kiteconnect import KiteConnect
+from datetime import datetime
 import os
 import pandas as pd
 import requests
@@ -33,6 +34,24 @@ def send_telegram_message(message):
 @app.route("/")
 def home():
 
+    current_time = datetime.now().time()
+
+market_start = datetime.strptime(
+    "09:20",
+    "%H:%M"
+).time()
+
+market_end = datetime.strptime(
+    "14:30",
+    "%H:%M"
+).time()
+
+if (
+    current_time < market_start
+    or current_time > market_end
+):
+    return "Market Closed"
+    
     data = kite.historical_data(
         instrument_token=265,
         from_date="2026-05-20",
@@ -44,6 +63,13 @@ def home():
 
     df["EMA9"] = df["close"].ewm(span=9).mean()
     df["EMA21"] = df["close"].ewm(span=21).mean()
+    df["cum_volume"] = df["volume"].cumsum()
+    df["cum_vol_price"] = (
+        (df["close"] * df["volume"]).cumsum()
+    )
+        df["VWAP"] = (
+        df["cum_vol_price"] / df["cum_volume"]
+    )
 
     latest = df.iloc[-1]
     previous = df.iloc[-2]
@@ -54,16 +80,18 @@ def home():
     if (
         previous["EMA9"] < previous["EMA21"]
         and latest["EMA9"] > latest["EMA21"]
+        and latest["close"] > latest["VWAP"]
     ):
-        signal = "BUY"
-
+    signal = "BUY"
+   
     # SELL crossover
     elif (
         previous["EMA9"] > previous["EMA21"]
         and latest["EMA9"] < latest["EMA21"]
+        and latest["close"] < latest["VWAP"]
     ):
         signal = "SELL"
-
+ 
     message = f"""
 SENSEX {signal} SIGNAL
 

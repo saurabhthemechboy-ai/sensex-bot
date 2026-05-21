@@ -3,6 +3,8 @@ import requests
 app = Flask(__name__)
 BOT_TOKEN = "8213688201:AAFJVt9dLyAUPfnh_eWetpMmzbaS_Nb4tk"
 CHAT_ID = "-1003932123947"
+@app.route('/')
+def home():
 @app.route('/webhook', methods=['POST'])
 def webhook():
   data = request.json
@@ -20,6 +22,3 @@ def webhook():
     "text": message }
   requests.post(telegram_url, json=payload)
   return {"status": "success"}
-  @app.route('/')
-  def home():
-    return "Bot is running"

@@ -45,16 +45,25 @@ def home():
     df["EMA9"] = df["close"].ewm(span=9).mean()
     df["EMA21"] = df["close"].ewm(span=21).mean()
 
-    latest = df.iloc[-1]
+latest = df.iloc[-1]
+previous = df.iloc[-2]
 
-    signal = "NO SIGNAL"
+signal = "NO SIGNAL"
 
-    if latest["EMA9"] > latest["EMA21"]:
-        signal = "BUY"
+# BUY crossover
+if (
+    previous["EMA9"] < previous["EMA21"]
+    and latest["EMA9"] > latest["EMA21"]
+):
+    signal = "BUY"
 
-    elif latest["EMA9"] < latest["EMA21"]:
-        signal = "SELL"
-
+# SELL crossover
+elif (
+    previous["EMA9"] > previous["EMA21"]
+    and latest["EMA9"] < latest["EMA21"]
+):
+    signal = "SELL"
+    
     message = f"""
 SENSEX {signal} SIGNAL
 

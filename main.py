@@ -4,10 +4,12 @@ import os
 
 app = Flask(__name__)
 
-kite = KiteConnect(
-    api_key=os.getenv("KITE_API_KEY")
-)
+API_KEY = os.getenv("KITE_API_KEY")
+API_SECRET = os.getenv("KITE_API_SECRET")
+
+kite = KiteConnect(api_key=API_KEY)
 
 @app.route("/")
 def home():
-    return "Kite SDK Connected"
+    login_url = kite.login_url()
+    return f'<a href="{login_url}">Login to Zerodha</a>'

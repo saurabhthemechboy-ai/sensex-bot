@@ -11,4 +11,6 @@ def home():
 
     kite = KiteConnect(api_key=api_key)
 
-    return "Real API Key Connected"
+    login_url = kite.login_url()
+
+    return f'<a href="{login_url}">Login to Zerodha</a>'

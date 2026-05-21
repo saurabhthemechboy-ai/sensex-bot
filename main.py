@@ -75,8 +75,8 @@ EMA21: {latest['EMA21']}
 
 if signal != "NO SIGNAL":
     send_telegram_message(message)
-
     return f"""
+    
     Signal: {signal}<br><br>
     Price: {latest['close']}<br>
     EMA9: {latest['EMA9']}<br>

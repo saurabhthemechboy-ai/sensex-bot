@@ -1,16 +1,28 @@
-from flask import Flask
+from flask import Flask, request
 from kiteconnect import KiteConnect
 import os
 
 app = Flask(__name__)
 
+API_KEY = os.getenv("KITE_API_KEY")
+API_SECRET = os.getenv("KITE_API_SECRET")
+
+kite = KiteConnect(api_key=API_KEY)
+
 @app.route("/")
 def home():
 
-    api_key = os.getenv("KITE_API_KEY")
+    request_token = request.args.get("request_token")
 
-    kite = KiteConnect(api_key=api_key)
+    if request_token:
 
-    login_url = kite.login_url()
+        data = kite.generate_session(
+            request_token,
+            api_secret=API_SECRET
+        )
 
-    return f'<a href="{login_url}">Login to Zerodha</a>'
+        access_token = data["access_token"]
+
+        return f"ACCESS TOKEN:<br><br>{access_token}"
+
+    return f'<a href="{kite.login_url()}">Login to Zerodha</a>'

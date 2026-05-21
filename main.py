@@ -64,8 +64,8 @@ elif (
     and latest["EMA9"] < latest["EMA21"]
 ):
     signal = "SELL"
-    
-    message = f"""
+
+message = f"""
 SENSEX {signal} SIGNAL
 
 Price: {latest['close']}
@@ -73,6 +73,7 @@ EMA9: {latest['EMA9']}
 EMA21: {latest['EMA21']}
 """
 
+if signal != "NO SIGNAL":
     send_telegram_message(message)
 
     return f"""

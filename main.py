@@ -12,7 +12,7 @@ ACCESS_TOKEN = "f3yAMI1PMBgORimWDAQS0ViEGk4WmT36"
 
 kite = KiteConnect(api_key=API_KEY)
 kite.set_access_token(ACCESS_TOKEN)
-
+last_signal = None
 
 def send_telegram_message(message):
     token = os.getenv("TELEGRAM_TOKEN")
@@ -29,6 +29,7 @@ def send_telegram_message(message):
 
 @app.route("/")
 def home():
+    global last_signal
     current_time = datetime.now().time()
 
     market_start = datetime.strptime("09:20", "%H:%M").time()
@@ -53,7 +54,7 @@ def home():
     df["cum_vol_price"] = (df["close"] * df["volume"]).cumsum()
     df["VWAP"] = df["cum_vol_price"] / df["cum_volume"]	
 
-    latest = df.iloc[-1]
+    latest['close']
     previous = df.iloc[-2]
 
     signal = "NO SIGNAL"
@@ -63,6 +64,7 @@ def home():
         previous["EMA9"] < previous["EMA21"]
         and latest["EMA9"] > latest["EMA21"]
         and latest["close"] > latest["VWAP"]
+        and latest["close"] > latest["open"]
     ):
         signal = "BUY"
    
@@ -71,19 +73,30 @@ def home():
         previous["EMA9"] > previous["EMA21"]
         and latest["EMA9"] < latest["EMA21"]
         and latest["close"] < latest["VWAP"]
+        and latest["close"] < latest["open"]
     ):
         signal = "SELL"
- 
+
+    sensex_price = latest["close"]
+    atm_strike = round(sensex_price / 100) * 100
+    option_signal = ""
+    if signal == "BUY":
+        option_signal = f"{atm_strike} CE"
+    elif signal == "SELL":
+        option_signal = f"{atm_strike} PE"
+
     message = f"""
     SENSEX {signal} SIGNAL
-
-    Price: {latest['close']}
+    Option: {option_signal}
+    Spot Price: {latest['close']}
     EMA9: {latest['EMA9']}
     EMA21: {latest['EMA21']}
+    VWAP: {latest['VWAP']}
     """
 
-    if signal != "NO SIGNAL":
+    if signal != "NO SIGNAL" and signal != last_signal:
         send_telegram_message(message)
+        last_signal = signal
 
     return f"""
     Signal: {signal}<br><br>

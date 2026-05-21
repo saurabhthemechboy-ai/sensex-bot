@@ -67,8 +67,8 @@ if (
     df["cum_vol_price"] = (
         (df["close"] * df["volume"]).cumsum()
     )
-        df["VWAP"] = (
-        df["cum_vol_price"] / df["cum_volume"]
+    df["VWAP"] = (
+    df["cum_vol_price"] / df["cum_volume"]
     )
 
     latest = df.iloc[-1]

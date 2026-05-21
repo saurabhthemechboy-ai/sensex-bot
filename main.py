@@ -14,9 +14,8 @@ kite = KiteConnect(api_key=API_KEY)
 
 kite.set_access_token(ACCESS_TOKEN)
 
-# ADD TELEGRAM FUNCTION HERE
-if signal != "NO SIGNAL":
-    send_telegram_message(message)
+
+def send_telegram_message(message):
 
     token = os.getenv("TELEGRAM_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
@@ -30,7 +29,7 @@ if signal != "NO SIGNAL":
 
     requests.post(url, data=payload)
 
-# BELOW THIS
+
 @app.route("/")
 def home():
 
@@ -46,26 +45,26 @@ def home():
     df["EMA9"] = df["close"].ewm(span=9).mean()
     df["EMA21"] = df["close"].ewm(span=21).mean()
 
-latest = df.iloc[-1]
-previous = df.iloc[-2]
+    latest = df.iloc[-1]
+    previous = df.iloc[-2]
 
-signal = "NO SIGNAL"
+    signal = "NO SIGNAL"
 
-# BUY crossover
-if (
-    previous["EMA9"] < previous["EMA21"]
-    and latest["EMA9"] > latest["EMA21"]
-):
-    signal = "BUY"
+    # BUY crossover
+    if (
+        previous["EMA9"] < previous["EMA21"]
+        and latest["EMA9"] > latest["EMA21"]
+    ):
+        signal = "BUY"
 
-# SELL crossover
-elif (
-    previous["EMA9"] > previous["EMA21"]
-    and latest["EMA9"] < latest["EMA21"]
-):
-    signal = "SELL"
+    # SELL crossover
+    elif (
+        previous["EMA9"] > previous["EMA21"]
+        and latest["EMA9"] < latest["EMA21"]
+    ):
+        signal = "SELL"
 
-message = f"""
+    message = f"""
 SENSEX {signal} SIGNAL
 
 Price: {latest['close']}
@@ -73,13 +72,12 @@ EMA9: {latest['EMA9']}
 EMA21: {latest['EMA21']}
 """
 
-if signal != "NO SIGNAL":
-    send_telegram_message(message)
+    if signal != "NO SIGNAL":
+        send_telegram_message(message)
 
-return f"""
-    
+    return f"""
     Signal: {signal}<br><br>
     Price: {latest['close']}<br>
     EMA9: {latest['EMA9']}<br>
     EMA21: {latest['EMA21']}
-    """
+    """ 

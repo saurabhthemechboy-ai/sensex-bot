@@ -5,6 +5,7 @@ BOT_TOKEN = "8213688201:AAFJVt9dLyAUPfnh_eWetpMmzbaS_Nb4tk"
 CHAT_ID = "-1003932123947"
 @app.route('/')
 def home():
+  return "Bot is running"
 @app.route('/webhook', methods=['POST'])
 def webhook():
   data = request.json

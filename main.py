@@ -1,9 +1,14 @@
 from flask import Flask
 from kiteconnect import KiteConnect
+import os
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    kite = KiteConnect(api_key="test")
-    return "Kite SDK Working"
+
+    api_key = os.getenv("KITE_API_KEY")
+
+    kite = KiteConnect(api_key=api_key)
+
+    return "Real API Key Connected"

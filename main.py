@@ -15,7 +15,7 @@ kite = KiteConnect(api_key=API_KEY)
 kite.set_access_token(ACCESS_TOKEN)
 
 # ADD TELEGRAM FUNCTION HERE
-def if signal != "NO SIGNAL":
+    if signal != "NO SIGNAL":
     send_telegram_message(message)
 
     token = os.getenv("TELEGRAM_TOKEN")

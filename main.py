@@ -80,20 +80,30 @@ def home():
     sensex_price = latest["close"]
     atm_strike = round(sensex_price / 100) * 100
     option_signal = ""
+    stop_loss = 0
+    target = 0
     if signal == "BUY":
         option_signal = f"{atm_strike} CE"
+        stop_loss = previous["low"]
+        risk = latest["close"] - stop_loss
+        target = latest["close"] + (risk * 2)
     elif signal == "SELL":
         option_signal = f"{atm_strike} PE"
+        stop_loss = previous["high"]
+        risk = stop_loss - latest["close"]
+        target = latest["close"] - (risk * 2)
 
     message = f"""
     SENSEX {signal} SIGNAL
     Option: {option_signal}
     Spot Price: {latest['close']}
+    Stop Loss: {stop_loss}
+    Target: {target}
     EMA9: {latest['EMA9']}
     EMA21: {latest['EMA21']}
     VWAP: {latest['VWAP']}
     """
-
+  
     if signal != "NO SIGNAL" and signal != last_signal:
         send_telegram_message(message)
         last_signal = signal

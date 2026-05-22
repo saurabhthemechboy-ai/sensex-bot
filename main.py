@@ -54,7 +54,7 @@ def home():
     df["cum_vol_price"] = (df["close"] * df["volume"]).cumsum()
     df["VWAP"] = df["cum_vol_price"] / df["cum_volume"]	
 
-    latest['close']
+    latest = df.iloc[-1]
     previous = df.iloc[-2]
 
     signal = "NO SIGNAL"
